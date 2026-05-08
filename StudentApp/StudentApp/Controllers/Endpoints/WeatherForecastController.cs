@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using StudentApp.View;
 
-namespace StudentApp.Controllers
+namespace StudentApp.Controllers.Endpoints
 {
     [ApiController]
     [Route("[controller]")]
