@@ -5,7 +5,7 @@ using StudentApp.Model.DTO;
 using StudentApp.Model.Entities;
 using System.Security.Cryptography;
 
-namespace StudentApp.Controllers.Endpoints
+namespace StudentApp.Controllers
 {
     [ApiController]
     [Route("api/auth")]
@@ -24,7 +24,7 @@ namespace StudentApp.Controllers.Endpoints
             var existingUser = await _context.Users
                 .FirstOrDefaultAsync(u => u.Email == dto.Email);
 
-            if (existingUser != null)
+            if (existingUser is not null)
             {
                 return BadRequest("U¿ytkownik o takim adresie email ju¿ istnieje.");
             }

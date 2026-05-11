@@ -16,9 +16,9 @@ public class UserTask
 
     public DateTime? DueDate { get; set; }
 
-    public TaskPriorityDto Priority { get; set; } = TaskPriorityDto.Sredni;
+    public TaskPriorityDto Priority { get; set; } = TaskPriorityDto.Medium;
 
-    public TaskStatusDto Status { get; set; } = TaskStatusDto.DoZrobienia;
+    public TaskStatusDto Status { get; set; } = TaskStatusDto.ToDo;
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 

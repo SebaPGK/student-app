@@ -5,9 +5,10 @@ using StudentApp.Data;
 using StudentApp.Model.DTO;
 using StudentApp.Model.Entities;
 using StudentApp.Model.Enums;
+using StudentApp.Model.Mappers;
 using System.Security.Claims;
 
-namespace StudentApp.Controllers.Endpoints
+namespace StudentApp.Controllers
 {
     [ApiController]
     [Route("api/tasks")]
@@ -56,14 +57,14 @@ namespace StudentApp.Controllers.Endpoints
 
                 query = query.Where(t =>
                     t.Title.Contains(phrase) ||
-                    (t.Description != null && t.Description.Contains(phrase)));
+                    t.Description != null && t.Description.Contains(phrase));
             }
 
             var tasks = await query
                 .OrderBy(t => t.Status)
                 .ThenBy(t => t.DueDate)
                 .ThenByDescending(t => t.CreatedAt)
-                .Select(t => MapToDto(t))
+                .Select(t => TasksMapper.MapToDto(t))
                 .ToListAsync();
 
             return Ok(tasks);
@@ -82,11 +83,11 @@ namespace StudentApp.Controllers.Endpoints
                 return NotFound();
             }
 
-            return Ok(MapToDto(task));
+            return Ok(TasksMapper.MapToDto(task));
         }
 
         [HttpGet("upcoming")]
-        public async Task<ActionResult<IEnumerable<UpcomingTaskDto>>> GetUpcomingTasks([FromQuery] int limit = 5)
+        public async Task<ActionResult<IEnumerable<TaskDto>>> GetUpcomingTasks([FromQuery] int limit = 5)
         {
             var userId = GetCurrentUserId();
 
@@ -102,10 +103,10 @@ namespace StudentApp.Controllers.Endpoints
                     t.UserId == userId &&
                     t.DueDate != null &&
                     t.DueDate >= now &&
-                    t.Status != TaskStatusDto.Zrobione)
+                    t.Status != TaskStatusDto.Done)
                 .OrderBy(t => t.DueDate)
                 .Take(limit)
-                .Select(t => new UpcomingTaskDto
+                .Select(t => new TaskDto
                 {
                     Id = t.Id,
                     Title = t.Title,
@@ -119,7 +120,7 @@ namespace StudentApp.Controllers.Endpoints
         }
 
         [HttpPost]
-        public async Task<ActionResult<TaskDto>> CreateTask(CreateTaskDto dto)
+        public async Task<ActionResult<TaskDto>> CreateTask(TaskDto dto)
         {
             var userId = GetCurrentUserId();
 
@@ -130,14 +131,14 @@ namespace StudentApp.Controllers.Endpoints
                 Description = dto.Description,
                 DueDate = dto.DueDate,
                 Priority = dto.Priority,
-                Status = TaskStatusDto.DoZrobienia,
+                Status = TaskStatusDto.ToDo,
                 CreatedAt = DateTime.UtcNow
             };
 
             _context.UserTasks.Add(task);
             await _context.SaveChangesAsync();
 
-            var result = MapToDto(task);
+            var result = TasksMapper.MapToDto(task);
 
             return CreatedAtAction(
                 nameof(GetTaskById),
@@ -146,7 +147,7 @@ namespace StudentApp.Controllers.Endpoints
         }
 
         [HttpPut("{id:int}")]
-        public async Task<IActionResult> UpdateTask(int id, UpdateTaskDto dto)
+        public async Task<IActionResult> UpdateTask(int id, TaskDto dto)
         {
             var userId = GetCurrentUserId();
 
@@ -171,7 +172,7 @@ namespace StudentApp.Controllers.Endpoints
         }
 
         [HttpPatch("{id:int}/status")]
-        public async Task<IActionResult> UpdateTaskStatus(int id, UpdateTaskStatusDto dto)
+        public async Task<IActionResult> UpdateTaskStatus(int id, TaskDto dto)
         {
             var userId = GetCurrentUserId();
 
@@ -204,7 +205,7 @@ namespace StudentApp.Controllers.Endpoints
                 return NotFound();
             }
 
-            task.Status = TaskStatusDto.Zrobione;
+            task.Status = TaskStatusDto.Done;
             task.UpdatedAt = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
@@ -229,22 +230,6 @@ namespace StudentApp.Controllers.Endpoints
             await _context.SaveChangesAsync();
 
             return NoContent();
-        }
-
-        private static TaskDto MapToDto(UserTask task)
-        {
-            return new TaskDto
-            {
-                Id = task.Id,
-                UserId = task.UserId,
-                Title = task.Title,
-                Description = task.Description,
-                DueDate = task.DueDate,
-                Priority = task.Priority,
-                Status = task.Status,
-                CreatedAt = task.CreatedAt,
-                UpdatedAt = task.UpdatedAt
-            };
         }
 
         private int GetCurrentUserId()

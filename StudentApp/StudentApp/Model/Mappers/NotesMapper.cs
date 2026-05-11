@@ -5,7 +5,7 @@ namespace StudentApp.Model.Mappers
 {
     static public class NotesMapper
     {
-        private static NoteDto MapToDto(Note note)
+        public static NoteDto MapToDto(Note note)
         {
             return new NoteDto
             {

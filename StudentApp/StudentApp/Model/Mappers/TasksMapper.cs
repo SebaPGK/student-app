@@ -5,7 +5,7 @@ namespace StudentApp.Model.Mappers
 {
     static public class TasksMapper
     {
-        private static TaskDto MapToDto(UserTask task)
+        public static TaskDto MapToDto(UserTask task)
         {
             return new TaskDto
             {

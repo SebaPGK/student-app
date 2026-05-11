@@ -4,9 +4,10 @@ using Microsoft.EntityFrameworkCore;
 using StudentApp.Data;
 using StudentApp.Model.DTO;
 using StudentApp.Model.Entities;
+using StudentApp.Model.Mappers;
 using System.Security.Claims;
 
-namespace StudentApp.Controllers.Endpoints
+namespace StudentApp.Controllers
 {
     [ApiController]
     [Route("api/notes")]
@@ -28,7 +29,7 @@ namespace StudentApp.Controllers.Endpoints
             var notes = await _context.Notes
                 .Where(n => n.UserId == userId)
                 .OrderByDescending(n => n.CreatedAt)
-                .Select(n => MapToDto(n))
+                .Select(n => NotesMapper.MapToDto(n))
                 .ToListAsync();
 
             return Ok(notes);
@@ -42,16 +43,16 @@ namespace StudentApp.Controllers.Endpoints
             var note = await _context.Notes
                 .FirstOrDefaultAsync(n => n.Id == id && n.UserId == userId);
 
-            if (note == null)
+            if (note is null)
             {
                 return NotFound();
             }
 
-            return Ok(MapToDto(note));
+            return Ok(NotesMapper.MapToDto(note));
         }
 
         [HttpPost]
-        public async Task<ActionResult<NoteDto>> CreateNote(CreateNoteDto dto)
+        public async Task<ActionResult<NoteDto>> CreateNote(NoteDto dto)
         {
             var userId = GetCurrentUserId();
 
@@ -66,7 +67,7 @@ namespace StudentApp.Controllers.Endpoints
             _context.Notes.Add(note);
             await _context.SaveChangesAsync();
 
-            var result = MapToDto(note);
+            var result = NotesMapper.MapToDto(note);
 
             return CreatedAtAction(
                 nameof(GetNoteById),
@@ -75,24 +76,24 @@ namespace StudentApp.Controllers.Endpoints
         }
 
         [HttpPut("{id:int}")]
-        public async Task<IActionResult> UpdateNote(int id, UpdateNoteDto dto)
+        public async Task<IActionResult> UpdateNote(int id, NoteDto dto)
         {
             var userId = GetCurrentUserId();
 
             var note = await _context.Notes
                 .FirstOrDefaultAsync(n => n.Id == id && n.UserId == userId);
 
-            if (note == null)
+            if (note is null)
             {
                 return NotFound();
             }
 
-            if (dto.Title != null)
+            if (dto.Title is not null)
             {
                 note.Title = dto.Title;
             }
 
-            if (dto.Content != null)
+            if (dto.Content is not null)
             {
                 note.Content = dto.Content;
             }
@@ -112,7 +113,7 @@ namespace StudentApp.Controllers.Endpoints
             var note = await _context.Notes
                 .FirstOrDefaultAsync(n => n.Id == id && n.UserId == userId);
 
-            if (note == null)
+            if (note is null)
             {
                 return NotFound();
             }
@@ -121,19 +122,6 @@ namespace StudentApp.Controllers.Endpoints
             await _context.SaveChangesAsync();
 
             return NoContent();
-        }
-
-        private static NoteDto MapToDto(Note note)
-        {
-            return new NoteDto
-            {
-                Id = note.Id,
-                UserId = note.UserId,
-                Title = note.Title,
-                Content = note.Content,
-                CreatedAt = note.CreatedAt,
-                UpdatedAt = note.UpdatedAt
-            };
         }
 
         private int GetCurrentUserId()
