@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using StudentApp.Data;
 using StudentApp.Model.DTO;
+using StudentApp.Model.Entities;
 using System.Security.Claims;
 
 namespace StudentApp.Controllers.Endpoints
@@ -17,7 +20,6 @@ namespace StudentApp.Controllers.Endpoints
             _context = context;
         }
 
-        // GET: api/notes
         [HttpGet]
         public async Task<ActionResult<IEnumerable<NoteDto>>> GetNotes()
         {
@@ -26,21 +28,12 @@ namespace StudentApp.Controllers.Endpoints
             var notes = await _context.Notes
                 .Where(n => n.UserId == userId)
                 .OrderByDescending(n => n.CreatedAt)
-                .Select(n => new NoteDto
-                {
-                    Id = n.Id,
-                    UserId = n.UserId,
-                    Title = n.Title,
-                    Content = n.Content,
-                    CreatedAt = n.CreatedAt,
-                    UpdatedAt = n.UpdatedAt
-                })
+                .Select(n => MapToDto(n))
                 .ToListAsync();
 
             return Ok(notes);
         }
 
-        // GET: api/notes/5
         [HttpGet("{id:int}")]
         public async Task<ActionResult<NoteDto>> GetNoteById(int id)
         {
@@ -49,7 +42,7 @@ namespace StudentApp.Controllers.Endpoints
             var note = await _context.Notes
                 .FirstOrDefaultAsync(n => n.Id == id && n.UserId == userId);
 
-            if (note is null)
+            if (note == null)
             {
                 return NotFound();
             }
@@ -57,7 +50,6 @@ namespace StudentApp.Controllers.Endpoints
             return Ok(MapToDto(note));
         }
 
-        // POST: api/notes
         [HttpPost]
         public async Task<ActionResult<NoteDto>> CreateNote(CreateNoteDto dto)
         {
@@ -82,7 +74,6 @@ namespace StudentApp.Controllers.Endpoints
                 result);
         }
 
-        // PUT: api/notes/5
         [HttpPut("{id:int}")]
         public async Task<IActionResult> UpdateNote(int id, UpdateNoteDto dto)
         {
@@ -91,13 +82,21 @@ namespace StudentApp.Controllers.Endpoints
             var note = await _context.Notes
                 .FirstOrDefaultAsync(n => n.Id == id && n.UserId == userId);
 
-            if (note is null)
+            if (note == null)
             {
                 return NotFound();
             }
 
-            note.Title = dto.Title;
-            note.Content = dto.Content;
+            if (dto.Title != null)
+            {
+                note.Title = dto.Title;
+            }
+
+            if (dto.Content != null)
+            {
+                note.Content = dto.Content;
+            }
+
             note.UpdatedAt = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
@@ -105,7 +104,6 @@ namespace StudentApp.Controllers.Endpoints
             return NoContent();
         }
 
-        // DELETE: api/notes/5
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> DeleteNote(int id)
         {
@@ -114,7 +112,7 @@ namespace StudentApp.Controllers.Endpoints
             var note = await _context.Notes
                 .FirstOrDefaultAsync(n => n.Id == id && n.UserId == userId);
 
-            if (note is null)
+            if (note == null)
             {
                 return NotFound();
             }
@@ -123,6 +121,19 @@ namespace StudentApp.Controllers.Endpoints
             await _context.SaveChangesAsync();
 
             return NoContent();
+        }
+
+        private static NoteDto MapToDto(Note note)
+        {
+            return new NoteDto
+            {
+                Id = note.Id,
+                UserId = note.UserId,
+                Title = note.Title,
+                Content = note.Content,
+                CreatedAt = note.CreatedAt,
+                UpdatedAt = note.UpdatedAt
+            };
         }
 
         private int GetCurrentUserId()

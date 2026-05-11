@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using StudentApp.Data;
 using StudentApp.Model.DTO;
+using StudentApp.Model.Entities;
 using StudentApp.Model.Enums;
 using System.Security.Claims;
 
@@ -18,8 +21,6 @@ namespace StudentApp.Controllers.Endpoints
             _context = context;
         }
 
-        // GET: api/tasks
-        // Obsługuje listę zadań + filtrowanie.
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TaskDto>>> GetTasks([FromQuery] TaskFilterDto filter)
         {
@@ -62,24 +63,12 @@ namespace StudentApp.Controllers.Endpoints
                 .OrderBy(t => t.Status)
                 .ThenBy(t => t.DueDate)
                 .ThenByDescending(t => t.CreatedAt)
-                .Select(t => new TaskDto
-                {
-                    Id = t.Id,
-                    UserId = t.UserId,
-                    Title = t.Title,
-                    Description = t.Description,
-                    DueDate = t.DueDate,
-                    Priority = t.Priority,
-                    Status = t.Status,
-                    CreatedAt = t.CreatedAt,
-                    UpdatedAt = t.UpdatedAt
-                })
+                .Select(t => MapToDto(t))
                 .ToListAsync();
 
             return Ok(tasks);
         }
 
-        // GET: api/tasks/5
         [HttpGet("{id:int}")]
         public async Task<ActionResult<TaskDto>> GetTaskById(int id)
         {
@@ -88,7 +77,7 @@ namespace StudentApp.Controllers.Endpoints
             var task = await _context.UserTasks
                 .FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
 
-            if (task is null)
+            if (task == null)
             {
                 return NotFound();
             }
@@ -96,8 +85,6 @@ namespace StudentApp.Controllers.Endpoints
             return Ok(MapToDto(task));
         }
 
-        // GET: api/tasks/upcoming?limit=5
-        // Panel główny z najbliższymi terminami.
         [HttpGet("upcoming")]
         public async Task<ActionResult<IEnumerable<UpcomingTaskDto>>> GetUpcomingTasks([FromQuery] int limit = 5)
         {
@@ -131,7 +118,6 @@ namespace StudentApp.Controllers.Endpoints
             return Ok(tasks);
         }
 
-        // POST: api/tasks
         [HttpPost]
         public async Task<ActionResult<TaskDto>> CreateTask(CreateTaskDto dto)
         {
@@ -159,7 +145,6 @@ namespace StudentApp.Controllers.Endpoints
                 result);
         }
 
-        // PUT: api/tasks/5
         [HttpPut("{id:int}")]
         public async Task<IActionResult> UpdateTask(int id, UpdateTaskDto dto)
         {
@@ -168,7 +153,7 @@ namespace StudentApp.Controllers.Endpoints
             var task = await _context.UserTasks
                 .FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
 
-            if (task is null)
+            if (task == null)
             {
                 return NotFound();
             }
@@ -185,8 +170,6 @@ namespace StudentApp.Controllers.Endpoints
             return NoContent();
         }
 
-        // PATCH: api/tasks/5/status
-        // Zmiana samego statusu, np. DoZrobienia -> WTrakcie -> Zrobione.
         [HttpPatch("{id:int}/status")]
         public async Task<IActionResult> UpdateTaskStatus(int id, UpdateTaskStatusDto dto)
         {
@@ -195,7 +178,7 @@ namespace StudentApp.Controllers.Endpoints
             var task = await _context.UserTasks
                 .FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
 
-            if (task is null)
+            if (task == null)
             {
                 return NotFound();
             }
@@ -208,8 +191,6 @@ namespace StudentApp.Controllers.Endpoints
             return NoContent();
         }
 
-        // PATCH: api/tasks/5/complete
-        // Szybkie oznaczenie jako wykonane.
         [HttpPatch("{id:int}/complete")]
         public async Task<IActionResult> MarkTaskAsCompleted(int id)
         {
@@ -218,7 +199,7 @@ namespace StudentApp.Controllers.Endpoints
             var task = await _context.UserTasks
                 .FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
 
-            if (task is null)
+            if (task == null)
             {
                 return NotFound();
             }
@@ -231,7 +212,6 @@ namespace StudentApp.Controllers.Endpoints
             return NoContent();
         }
 
-        // DELETE: api/tasks/5
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> DeleteTask(int id)
         {
@@ -240,7 +220,7 @@ namespace StudentApp.Controllers.Endpoints
             var task = await _context.UserTasks
                 .FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
 
-            if (task is null)
+            if (task == null)
             {
                 return NotFound();
             }
@@ -249,6 +229,22 @@ namespace StudentApp.Controllers.Endpoints
             await _context.SaveChangesAsync();
 
             return NoContent();
+        }
+
+        private static TaskDto MapToDto(UserTask task)
+        {
+            return new TaskDto
+            {
+                Id = task.Id,
+                UserId = task.UserId,
+                Title = task.Title,
+                Description = task.Description,
+                DueDate = task.DueDate,
+                Priority = task.Priority,
+                Status = task.Status,
+                CreatedAt = task.CreatedAt,
+                UpdatedAt = task.UpdatedAt
+            };
         }
 
         private int GetCurrentUserId()

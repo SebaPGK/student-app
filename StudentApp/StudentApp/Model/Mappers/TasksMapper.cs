@@ -1,4 +1,5 @@
-﻿using StudentApp.Model.DTO;
+﻿using StudentApp.Model.Entities;
+using StudentApp.Model.DTO;
 
 namespace StudentApp.Model.Mappers
 {

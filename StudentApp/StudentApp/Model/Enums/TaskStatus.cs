@@ -2,8 +2,8 @@
 {
     public enum TaskStatusDto
     {
-        ToDo,
-        InProgress,
-        Done
+        DoZrobienia,
+        WTrakcie,
+        Zrobione
     }
 }
