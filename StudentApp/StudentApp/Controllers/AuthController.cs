@@ -1,9 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using StudentApp.Data;
 using StudentApp.Model.DTO;
 using StudentApp.Model.Entities;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Security.Cryptography;
+using System.Text;
 
 namespace StudentApp.Controllers
 {
@@ -12,10 +16,12 @@ namespace StudentApp.Controllers
     public class AuthController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly IConfiguration _configuration;
 
-        public AuthController(ApplicationDbContext context)
+        public AuthController(ApplicationDbContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
         }
 
         [HttpPost("register")]
@@ -55,7 +61,7 @@ namespace StudentApp.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<UserDto>> Login(LoginUserDto dto)
+        public async Task<ActionResult> Login(LoginUserDto dto)
         {
             var user = await _context.Users
                 .FirstOrDefaultAsync(u => u.Email == dto.Email);
@@ -79,7 +85,14 @@ namespace StudentApp.Controllers
                 Email = user.Email
             };
 
-            return Ok(result);
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Name, user.Username ?? string.Empty)
+            };
+
+            return Ok(new {user = result });
         }
 
         private static string GenerateSalt()

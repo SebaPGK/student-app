@@ -12,7 +12,6 @@ namespace StudentApp.Controllers
 {
     [ApiController]
     [Route("api/tasks")]
-    [Authorize]
     public class TasksController : ControllerBase
     {
         private readonly ApplicationDbContext _context;

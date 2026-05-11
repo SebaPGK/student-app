@@ -11,7 +11,6 @@ namespace StudentApp.Controllers
 {
     [ApiController]
     [Route("api/notes")]
-    [Authorize]
     public class NotesController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -24,10 +23,7 @@ namespace StudentApp.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<NoteDto>>> GetNotes()
         {
-            var userId = GetCurrentUserId();
-
             var notes = await _context.Notes
-                .Where(n => n.UserId == userId)
                 .OrderByDescending(n => n.CreatedAt)
                 .Select(n => NotesMapper.MapToDto(n))
                 .ToListAsync();
