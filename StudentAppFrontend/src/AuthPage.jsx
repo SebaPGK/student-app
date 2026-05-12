@@ -1,10 +1,14 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import './AuthPage.css'
 
 function AuthPage() {
   const [mode, setMode] = useState('login')
   const [form, setForm] = useState({ name: '', email: '', password: '', confirmPassword: '' })
   const [errors, setErrors] = useState({})
+  const [loading, setLoading] = useState(false)
+  const [apiError, setApiError] = useState('')
+  const navigate = useNavigate()
 
   const update = (field) => (e) => {
     setForm((f) => ({ ...f, [field]: e.target.value }))
@@ -23,12 +27,51 @@ function AuthPage() {
     return e
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     const errs = validate()
     if (Object.keys(errs).length) { setErrors(errs); return }
-    // TODO: connect to backend
-    console.log(mode, form)
+
+    setLoading(true)
+    setApiError('')
+
+    try {
+      const url = mode === 'login'
+        ? 'http://localhost:5174/api/auth/login'
+        : 'http://localhost:5174/api/auth/register'
+
+      const body = mode === 'login'
+        ? { email: form.email, password: form.password }
+        : { username: form.name, email: form.email, password: form.password }
+
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      })
+
+      const text = await res.text()
+      let data
+      try { data = text ? JSON.parse(text) : {} } catch { data = text }
+
+      if (!res.ok) {
+        setApiError(typeof data === 'string' ? data : (data.message ?? 'Something went wrong.'))
+        return
+      }
+
+      if (mode === 'login') {
+        localStorage.setItem('token', data.token)
+        localStorage.setItem('user', JSON.stringify(data.user))
+        navigate('/dashboard')
+      } else {
+        setMode('login')
+        setForm({ name: '', email: '', password: '', confirmPassword: '' })
+      }
+    } catch {
+      setApiError('Could not reach the server. Is the backend running?')
+    } finally {
+      setLoading(false)
+    }
   }
 
   const switchMode = (next) => {
@@ -118,8 +161,10 @@ function AuthPage() {
             </div>
           )}
 
-          <button id="submit-btn" type="submit">
-            {mode === 'login' ? 'Log in' : 'Create account'}
+          {apiError && <p className="api-error" role="alert">{apiError}</p>}
+
+          <button id="submit-btn" type="submit" disabled={loading}>
+            {loading ? 'Please wait…' : (mode === 'login' ? 'Log in' : 'Create account')}
           </button>
         </form>
 

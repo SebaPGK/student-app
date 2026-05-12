@@ -32,7 +32,7 @@ namespace StudentApp.Controllers
 
             if (existingUser is not null)
             {
-                return BadRequest("Uøytkownik o takim adresie email juø istnieje.");
+                return BadRequest("U≈ºytkownik o takim adresie email ju≈º istnieje.");
             }
 
             var salt = GenerateSalt();
@@ -68,14 +68,14 @@ namespace StudentApp.Controllers
 
             if (user == null)
             {
-                return Unauthorized("Nieprawid≥owy email lub has≥o.");
+                return Unauthorized("Nieprawid≈Çowy email lub has≈Ço.");
             }
 
             var passwordHash = HashPassword(dto.Password, user.PasswordSalt);
 
             if (passwordHash != user.PasswordHash)
             {
-                return Unauthorized("Nieprawid≥owy email lub has≥o.");
+                return Unauthorized("Nieprawid≈Çowy email lub has≈Ço.");
             }
 
             var result = new UserDto
@@ -92,7 +92,18 @@ namespace StudentApp.Controllers
                 new Claim(ClaimTypes.Name, user.Username ?? string.Empty)
             };
 
-            return Ok(new {user = result });
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var token = new JwtSecurityToken(
+                issuer: _configuration["Jwt:Issuer"],
+                audience: _configuration["Jwt:Audience"],
+                claims: claims,
+                expires: DateTime.UtcNow.AddDays(7),
+                signingCredentials: creds
+            );
+            var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+
+            return Ok(new { token = tokenString, user = result });
         }
 
         private static string GenerateSalt()
