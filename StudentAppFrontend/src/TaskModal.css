@@ -1,0 +1,164 @@
+.modal-overlay {
+  position: fixed;
+
+  inset: 0;
+
+  background: rgba(15, 23, 42, 0.45);
+
+  backdrop-filter: blur(4px);
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 20px;
+
+  z-index: 1000;
+}
+
+.task-modal {
+  width: 100%;
+  max-width: 520px;
+
+  background: var(--bg);
+
+  border: 1px solid var(--border);
+
+  border-radius: 18px;
+
+  padding: 32px;
+
+  box-shadow: var(--shadow);
+
+  text-align: left;
+}
+
+.task-modal h2 {
+  margin-bottom: 24px;
+
+  font-size: 28px;
+
+  letter-spacing: -1px;
+
+  color: var(--text-h);
+}
+
+.task-modal form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.task-modal input,
+.task-modal textarea {
+  width: 100%;
+
+  border: 1px solid var(--border);
+
+  border-radius: 10px;
+
+  padding: 12px 14px;
+
+  background: var(--bg);
+
+  color: var(--text-h);
+
+  font-size: 15px;
+
+  outline: none;
+
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+
+.task-modal textarea {
+  resize: vertical;
+
+  min-height: 120px;
+}
+
+.task-modal input:focus,
+.task-modal textarea:focus {
+  border-color: var(--accent);
+
+  box-shadow: 0 0 0 4px var(--accent-bg);
+}
+
+.modal-actions {
+  display: flex;
+
+  justify-content: flex-end;
+
+  gap: 12px;
+
+  margin-top: 10px;
+}
+
+.save-btn,
+.cancel-btn {
+  height: 44px;
+
+  padding: 0 18px;
+
+  border-radius: 10px;
+
+  border: 1px solid transparent;
+
+  cursor: pointer;
+
+  font-size: 14px;
+
+  font-weight: 500;
+
+  transition:
+    opacity 0.15s,
+    transform 0.1s,
+    border-color 0.15s;
+}
+
+.save-btn {
+  background: var(--accent);
+
+  color: white;
+}
+
+.save-btn:hover {
+  opacity: 0.92;
+}
+
+.cancel-btn {
+  background: var(--code-bg);
+
+  border-color: var(--border);
+
+  color: var(--text-h);
+}
+
+.cancel-btn:hover {
+  background: var(--accent-bg);
+
+  border-color: var(--accent-border);
+}
+
+.save-btn:active,
+.cancel-btn:active {
+  transform: scale(0.98);
+}
+
+@media (max-width: 480px) {
+  .task-modal {
+    padding: 24px;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+  }
+
+  .save-btn,
+  .cancel-btn {
+    width: 100%;
+  }
+}

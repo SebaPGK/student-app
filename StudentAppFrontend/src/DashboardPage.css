@@ -1,0 +1,95 @@
+.dashboard {
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+
+  @media (max-width: 768px) {
+    padding: 20px;
+  }
+}
+
+.stats-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 18px;
+}
+
+.stat-card {
+  background: var(--bg);
+
+  border: 1px solid var(--border);
+
+  border-radius: 14px;
+
+  padding: 24px;
+
+  text-align: left;
+
+  transition:
+    transform 0.15s,
+    border-color 0.15s,
+    box-shadow 0.15s;
+
+  cursor: pointer;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+
+  box-shadow: var(--shadow);
+}
+
+.stat-card.active {
+  border-color: var(--accent);
+
+  background: var(--accent-bg);
+}
+
+.stat-card h3 {
+  font-size: 15px;
+
+  font-weight: 500;
+
+  margin-top: 0;
+
+  margin-bottom: 12px;
+
+  color: var(--text);
+}
+
+.stat-card p {
+  font-size: 34px;
+
+  line-height: 1;
+
+  font-weight: 600;
+
+  color: var(--text-h);
+}
+
+.tasks-container {
+  display: grid;
+
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+
+  gap: 20px;
+}
+
+.empty-state {
+  padding: 40px;
+
+  border: 1px dashed var(--border);
+
+  border-radius: 14px;
+
+  color: var(--text);
+
+  background: var(--code-bg);
+}
+
+@media (max-width: 768px) {
+  .tasks-container {
+    grid-template-columns: 1fr;
+  }
+}
