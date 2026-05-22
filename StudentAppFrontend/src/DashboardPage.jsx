@@ -11,6 +11,8 @@ import {
 } from "./services/taskService";
 
 function DashboardPage() {
+  const [loading, setLoading] = useState(false);
+  const [apiError, setApiError] = useState("");
   const [selectedFilter, setSelectedFilter] = useState("todo");
   const [tasks, setTasks] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -25,13 +27,26 @@ function DashboardPage() {
   };
 
   useEffect(() => {
+    if (loading) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+  }, [loading]);
+
+  useEffect(() => {
     const fetchTasks = async () => {
+      setLoading(true);
+      setApiError("");
       try {
         const data = await getTasks();
 
         setTasks(data);
       } catch (error) {
-        console.error(error);
+        setApiError("Cannot retrieve tasks from database");
+        console.log(error);
+      } finally {
+        setLoading(false);
       }
     };
     fetchTasks();
@@ -79,6 +94,8 @@ function DashboardPage() {
   };
 
   const handleSaveTask = async (taskData) => {
+    setLoading(true);
+    setApiError("");
     if (taskData.id) {
       await updateTask(taskData);
 
@@ -86,12 +103,18 @@ function DashboardPage() {
         prev.map((task) => (task.id === taskData.id ? taskData : task)),
       );
     } else {
-      // TODO: dodać pobieranie z bazy danych
-      taskData.completed = false;
-      const newTask = await createTask(taskData);
-
-      setTasks((prev) => [...prev, newTask]);
+      try {
+        taskData.completed = false;
+        const newTask = await createTask(taskData);
+        console.log("Hello");
+        console.log(newTask);
+        setTasks((prev) => [...prev, newTask]);
+      } catch (error) {
+        setApiError("Could not add new task into database");
+        console.log(error);
+      }
     }
+    setLoading(false);
   };
 
   const today = new Date();
@@ -119,6 +142,7 @@ function DashboardPage() {
     <>
       <Header user={user} onLogout={handleLogout} onAddTask={handleAddTask} />
       <div className="dashboard">
+        {apiError && <div className="api-error">{apiError}</div>}
         <div className="stats-container">
           <div
             className={`stat-card todo ${
@@ -173,11 +197,20 @@ function DashboardPage() {
           ))}
         </div>
       </div>
+      {loading && (
+        <div className="loading-overlay">
+          <div className="loading-box">
+            <div className="spinner" />
+            <p>Proszę czekać</p>
+          </div>
+        </div>
+      )}
       <TaskModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSave={handleSaveTask}
         task={editingTask}
+        loading={loading}
       />
     </>
   );

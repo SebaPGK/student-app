@@ -1,12 +1,18 @@
 import "./TaskCard.css";
 
 function TaskCard({ task, onComplete, onEdit, onDelete }) {
+  const formattedDate = new Intl.DateTimeFormat("pl-PL", {
+    year: "numeric",
+    month: "long",
+    day: "2-digit",
+  }).format(new Date(task.dueDate));
+
   return (
     <div className={`task-card ${task.completed ? "completed" : ""}`}>
       <h3>{task.title}</h3>
 
       <p className="task-date">
-        <strong>Data wykonania:</strong> {task.date}
+        <strong>Data wykonania:</strong> {formattedDate}
       </p>
 
       <p className="task-description">{task.description}</p>

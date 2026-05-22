@@ -1,5 +1,4 @@
-// TODO: Dodać odpowiednie api
-const API_URL = "";
+const API_URL = "http://localhost:5174/api";
 
 export const getTasks = async () => {
   const response = await fetch(API_URL);
@@ -63,8 +62,30 @@ export const getTasks = async () => {
 };
 
 export const createTask = async (taskData) => {
-  // TODO: Update id
-  return "OK";
+  const url = API_URL + "/tasks";
+  const token = localStorage.getItem("token");
+  console.log(token);
+
+  const dto = {
+    title: taskData.title,
+    description: taskData.description,
+    dueDate: taskData.date,
+    // TODO: dodać priority do formularza
+    priority: 1,
+  };
+
+  const res = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(dto),
+  });
+  if (!res.ok) {
+    throw new Error("Failed to create task");
+  }
+  return await res.json();
 };
 
 export const deleteTaskById = async (id) => {
