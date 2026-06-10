@@ -25,8 +25,7 @@ export const createTask = async (taskData) => {
     title: taskData.title,
     description: taskData.description,
     dueDate: taskData.date,
-    // TODO: dodać priority do formularza
-    priority: 1,
+    priority: taskData.priority,
   };
 
   const res = await fetch(url, {
@@ -47,8 +46,28 @@ export const deleteTaskById = async (id) => {
   return "OK";
 };
 
-export const updateTask = async (task) => {
-  return "OK";
+export const updateTask = async (taskData) => {
+  const url = `${API_URL}/tasks/${taskData.id}`;
+  const token = localStorage.getItem("token");
+
+  const dto = {
+    title: taskData.title,
+    description: taskData.description,
+    dueDate: taskData.date,
+    priority: taskData.priority,
+  };
+
+  const res = await fetch(url, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(dto),
+  });
+  if (!res.ok) {
+    throw new Error("Failed to update task");
+  }
 };
 
 export const loginUser = async (email, password) => {

@@ -97,10 +97,15 @@ function DashboardPage() {
     setLoading(true);
     setApiError("");
     if (taskData.id) {
+      try {
       await updateTask(taskData);
 
       setTasks((prev) =>
         prev.map((task) => (task.id === taskData.id ? taskData : task)),
+      } catch (error) {
+        setApiError("Could not update task");
+        console.log(error);
+      }
       );
     } else {
       try {
@@ -120,7 +125,7 @@ function DashboardPage() {
   const today = new Date();
   const todoTasks = tasks.filter((task) => !task.completed).length;
   const lateTasks = tasks.filter((task) => {
-    return !task.completed && new Date(task.date) < today;
+    return !task.completed && new Date(task.dueDate) < today;
   }).length;
   const completedTasks = tasks.filter((task) => task.completed).length;
   const allTasks = tasks.length;
@@ -130,7 +135,7 @@ function DashboardPage() {
       case "todo":
         return !task.completed;
       case "late":
-        return !task.completed && new Date(task.date) < today;
+        return !task.completed && new Date(task.dueDate) < today;
       case "completed":
         return task.completed;
       default:
