@@ -74,6 +74,38 @@
     box-shadow 0.15s;
 }
 
+.task-modal input,
+.task-modal textarea,
+.task-modal select {
+  width: 100%;
+
+  box-sizing: border-box;
+
+  border: 1px solid var(--border);
+
+  border-radius: 10px;
+
+  padding: 12px 14px;
+
+  background: var(--bg);
+
+  color: var(--text-h);
+
+  font-size: 15px;
+}
+
+.task-modal select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg fill='%23666' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M5.5 7l4.5 4 4.5-4'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  padding-right: 40px;
+}
+
 .task-modal textarea {
   resize: vertical;
 

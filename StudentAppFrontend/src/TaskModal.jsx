@@ -4,22 +4,25 @@ import { useEffect, useState } from "react";
 function TaskModal({ isOpen, onClose, onSave, task }) {
   const [formData, setFormData] = useState({
     title: "",
-    date: "",
+    dueDate: "",
     description: "",
+    priority: 0,
   });
 
   useEffect(() => {
     if (task) {
       setFormData({
         title: task.title,
-        date: task.date,
+        dueDate: task.dueDate,
         description: task.description,
+        priority: task.priority,
       });
     } else {
       setFormData({
         title: "",
-        date: "",
+        dueDate: "",
         description: "",
+        priority: 0,
       });
     }
   }, [task]);
@@ -27,9 +30,11 @@ function TaskModal({ isOpen, onClose, onSave, task }) {
   if (!isOpen) return null;
 
   const handleChange = (e) => {
+    const { name, value } = e.target;
+
     setFormData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value,
+      [name]: name === "priority" ? Number(value) : value,
     }));
   };
 
@@ -61,11 +66,21 @@ function TaskModal({ isOpen, onClose, onSave, task }) {
 
           <input
             type="date"
-            name="date"
-            value={formData.date}
+            name="dueDate"
+            value={formData.dueDate}
             onChange={handleChange}
             required
           />
+
+          <select
+            name="priority"
+            value={formData.priority}
+            onChange={handleChange}
+          >
+            <option value={0}>Niski</option>
+            <option value={1}>Średni</option>
+            <option value={2}>Wysoki</option>
+          </select>
 
           <textarea
             name="description"

@@ -7,9 +7,25 @@ function TaskCard({ task, onComplete, onEdit, onDelete }) {
     day: "2-digit",
   }).format(new Date(task.dueDate));
 
+  const priorityLabels = {
+    0: "Low",
+    1: "Medium",
+    2: "High",
+  };
+
   return (
     <div className={`task-card ${task.completed ? "completed" : ""}`}>
-      <h3>{task.title}</h3>
+      <div className="task-header">
+        <h3>{task.title}</h3>
+
+        <span
+          className={`priority-badge priority-${priorityLabels[
+            task.priority
+          ].toLowerCase()}`}
+        >
+          {priorityLabels[task.priority]}
+        </span>
+      </div>
 
       <p className="task-date">
         <strong>Data wykonania:</strong> {formattedDate}
