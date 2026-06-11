@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:5174/api";
+const API_URL = "http://localhost:7071/api";
 
 export const getTasks = async () => {
   const url = API_URL + "/tasks";
@@ -43,7 +43,19 @@ export const createTask = async (taskData) => {
 };
 
 export const deleteTaskById = async (id) => {
-  return "OK";
+  const url = `${API_URL}/tasks/${id}`;
+  const token = localStorage.getItem("token");
+
+  const res = await fetch(url, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  if (!res.ok) {
+    throw new Error("Failed to create task");
+  }
 };
 
 export const updateTask = async (taskData) => {

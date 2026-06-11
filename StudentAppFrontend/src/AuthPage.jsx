@@ -37,8 +37,8 @@ function AuthPage() {
 
     try {
       const url = mode === 'login'
-        ? 'http://localhost:5174/api/auth/login'
-        : 'http://localhost:5174/api/auth/register'
+        ? 'http://localhost:7071/api/auth/login'
+        : 'http://localhost:7071/api/auth/register'
 
       const body = mode === 'login'
         ? { email: form.email, password: form.password }

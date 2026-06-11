@@ -53,6 +53,8 @@ function DashboardPage() {
   }, []);
 
   const toggleComplete = async (id) => {
+    setLoading(true);
+    setApiError("");
     try {
       const selectedTask = tasks.find((task) => task.id === id);
 
@@ -67,18 +69,23 @@ function DashboardPage() {
         prevTasks.map((task) => (task.id === id ? updatedTask : task)),
       );
     } catch (error) {
+      setApiError("Could not update task");
       console.error(error);
     }
+    setLoading(false);
   };
 
   const toggleDelete = async (id) => {
+    setLoading(true);
+    setApiError("");
     try {
       await deleteTaskById(id);
-
       setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
     } catch (error) {
+      setApiError("Could not delete task");
       console.error(error);
     }
+    setLoading(false);
   };
 
   const handleAddTask = () => {
@@ -98,21 +105,19 @@ function DashboardPage() {
     setApiError("");
     if (taskData.id) {
       try {
-      await updateTask(taskData);
+        await updateTask(taskData);
 
-      setTasks((prev) =>
-        prev.map((task) => (task.id === taskData.id ? taskData : task)),
+        setTasks((prev) =>
+          prev.map((task) => (task.id === taskData.id ? taskData : task)),
+        );
       } catch (error) {
         setApiError("Could not update task");
         console.log(error);
       }
-      );
     } else {
       try {
         taskData.completed = false;
         const newTask = await createTask(taskData);
-        console.log("Hello");
-        console.log(newTask);
         setTasks((prev) => [...prev, newTask]);
       } catch (error) {
         setApiError("Could not add new task into database");
