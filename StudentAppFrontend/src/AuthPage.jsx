@@ -17,13 +17,13 @@ function AuthPage() {
 
   const validate = () => {
     const e = {}
-    if (mode === 'register' && !form.name.trim()) e.name = 'Name is required'
-    if (!form.email.trim()) e.email = 'Email is required'
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = 'Enter a valid email'
-    if (!form.password) e.password = 'Password is required'
-    else if (form.password.length < 8) e.password = 'At least 8 characters'
+    if (mode === 'register' && !form.name.trim()) e.name = 'Imię i nazwisko jest wymagane'
+    if (!form.email.trim()) e.email = 'Email jest wymagany'
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = 'Podaj prawidłowy adres email'
+    if (!form.password) e.password = 'Hasło jest wymagane'
+    else if (form.password.length < 8) e.password = 'Co najmniej 8 znaków'
     if (mode === 'register' && form.password !== form.confirmPassword)
-      e.confirmPassword = 'Passwords do not match'
+      e.confirmPassword = 'Hasła nie są zgodne'
     return e
   }
 
@@ -55,7 +55,7 @@ function AuthPage() {
       try { data = text ? JSON.parse(text) : {} } catch { data = text }
 
       if (!res.ok) {
-        setApiError(typeof data === 'string' ? data : (data.message ?? 'Something went wrong.'))
+        setApiError(typeof data === 'string' ? data : (data.message ?? 'Coś poszło nie tak.'))
         return
       }
 
@@ -68,7 +68,7 @@ function AuthPage() {
         setForm({ name: '', email: '', password: '', confirmPassword: '' })
       }
     } catch {
-      setApiError('Could not reach the server. Is the backend running?')
+      setApiError('Nie można połączyć się z serwerem. Czy backend jest uruchomiony?')
     } finally {
       setLoading(false)
     }
@@ -92,7 +92,7 @@ function AuthPage() {
               onClick={() => switchMode('login')}
               type="button"
             >
-              Log in
+              Zaloguj się
             </button>
             <button
               role="tab"
@@ -101,7 +101,7 @@ function AuthPage() {
               onClick={() => switchMode('register')}
               type="button"
             >
-              Register
+              Zarejestruj się
             </button>
           </div>
         </div>
@@ -110,11 +110,11 @@ function AuthPage() {
           {mode === 'register' && (
             <Field
               id="name"
-              label="Full name"
+              label="Imię i nazwisko"
               type="text"
               value={form.name}
               onChange={update('name')}
-              placeholder="Jane Smith"
+              placeholder="Jan Kowalski"
               error={errors.name}
               autoComplete="name"
             />
@@ -126,18 +126,18 @@ function AuthPage() {
             type="email"
             value={form.email}
             onChange={update('email')}
-            placeholder="you@university.edu"
+            placeholder="ty@uczelnia.edu"
             error={errors.email}
             autoComplete="email"
           />
 
           <Field
             id="password"
-            label="Password"
+            label="Hasło"
             type="password"
             value={form.password}
             onChange={update('password')}
-            placeholder={mode === 'register' ? 'At least 8 characters' : '••••••••'}
+            placeholder={mode === 'register' ? 'Co najmniej 8 znaków' : '••••••••'}
             error={errors.password}
             autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
           />
@@ -145,7 +145,7 @@ function AuthPage() {
           {mode === 'register' && (
             <Field
               id="confirmPassword"
-              label="Confirm password"
+              label="Potwierdź hasło"
               type="password"
               value={form.confirmPassword}
               onChange={update('confirmPassword')}
@@ -157,26 +157,26 @@ function AuthPage() {
 
           {mode === 'login' && (
             <div id="forgot">
-              <button type="button" className="link-btn">Forgot password?</button>
+              <button type="button" className="link-btn">Zapomniałeś hasła?</button>
             </div>
           )}
 
           {apiError && <p className="api-error" role="alert">{apiError}</p>}
 
           <button id="submit-btn" type="submit" disabled={loading}>
-            {loading ? 'Please wait…' : (mode === 'login' ? 'Log in' : 'Create account')}
+            {loading ? 'Proszę czekać…' : (mode === 'login' ? 'Zaloguj się' : 'Utwórz konto')}
           </button>
         </form>
 
         <p id="auth-switch">
-          {mode === 'login' ? "Don't have an account?" : 'Already have an account?'}
+          {mode === 'login' ? 'Nie masz konta?' : 'Masz już konto?'}
           {' '}
           <button
             type="button"
             className="link-btn"
             onClick={() => switchMode(mode === 'login' ? 'register' : 'login')}
           >
-            {mode === 'login' ? 'Register' : 'Log in'}
+            {mode === 'login' ? 'Zarejestruj się' : 'Zaloguj się'}
           </button>
         </p>
       </div>
