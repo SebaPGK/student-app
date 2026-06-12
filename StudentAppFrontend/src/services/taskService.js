@@ -24,7 +24,7 @@ export const createTask = async (taskData) => {
   const dto = {
     title: taskData.title,
     description: taskData.description,
-    dueDate: taskData.date,
+    dueDate: taskData.dueDate,
     priority: taskData.priority,
   };
 
@@ -65,7 +65,7 @@ export const updateTask = async (taskData) => {
   const dto = {
     title: taskData.title,
     description: taskData.description,
-    dueDate: taskData.date,
+    dueDate: taskData.dueDate,
     priority: taskData.priority,
   };
 
