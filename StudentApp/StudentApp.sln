@@ -1,9 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.37111.16 d17.14
+VisualStudioVersion = 17.14.37111.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudentApp", "StudentApp\StudentApp.csproj", "{4CBB05B6-EF71-4F6A-8097-E448E1FEB374}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BackendTest", "BackendTest\BackendTest.csproj", "{C147C4B9-9471-457C-B088-B27E1BCDC5A0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,9 +19,16 @@ Global
 		{4CBB05B6-EF71-4F6A-8097-E448E1FEB374}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4CBB05B6-EF71-4F6A-8097-E448E1FEB374}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4CBB05B6-EF71-4F6A-8097-E448E1FEB374}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C147C4B9-9471-457C-B088-B27E1BCDC5A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C147C4B9-9471-457C-B088-B27E1BCDC5A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C147C4B9-9471-457C-B088-B27E1BCDC5A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C147C4B9-9471-457C-B088-B27E1BCDC5A0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C147C4B9-9471-457C-B088-B27E1BCDC5A0} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {826AA5B8-0C92-410F-8D36-418697E308E5}
